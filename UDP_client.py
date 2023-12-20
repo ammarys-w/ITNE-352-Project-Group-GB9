@@ -65,6 +65,7 @@ def process_request(client, case, prompt):
     else:
         print("Failed to get response from server")
         # test 123 123
+        # test 123 123
 
 if __name__ == "__main__":
     client = create_client_socket()
