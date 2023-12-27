@@ -41,21 +41,23 @@ def extract_flight_arrived(data):
 
 # option number 2:Extract flight Delayed from the data
 def extract_flight_delayed(data):
-    flight_info = []
+    delayed_flights = []
     for flight in data:
         info ={
             'Departure Airport': flight['departure']['airport'],
             'Flight IATA': flight['flight']['iata'],
             'Origin Departure Time': flight['departure']['Scheduled'],
             'Estimated Arrival Time': flight['arrival']['estimated'],
-            
-            
-            
-            
-            
-            
-            
-            
+            'Arrival Delay': flight['arrival']['delay'],
+            'Arival Terminal': flight['arrival']['terminal'],
+            'Arival Gate': flight['arrival']['gate'] 
         }
+        #Checking out if the flight is delayed, either during arrival or departure.
+        # If there is a delay, it appends the flight information to the flight_info list.
+        if flight["arrival"].get("delay") or flight["departure"].get("delay"):
+            delayed_flights.append(info)
+    return delayed_flights
+# End of extract_flight_delayed function
+
 
     
