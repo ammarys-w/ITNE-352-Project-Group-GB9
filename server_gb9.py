@@ -22,3 +22,22 @@ def retrieve_data(arr_icao):
         json.dump(data_of_flight , f, indent=4)
     return data_of_flight    
 # End of retrieve_data function
+
+
+# option number 1:Extract flight arrived from the data
+def extract_flight_arrived(data):
+    flight_info = []
+    for flight in data:
+        info ={
+            'Departure Airport': flight['departure']['airport'],
+            'Flight IATA': flight['flight']['iata'],
+            'Arrival Time': flight['arrival']['Scheduled'],
+            'Arival Terminal': flight['arrival']['terminal'],
+            'Arival Gate': flight['arrival']['gate'], 
+        }
+        flight_info.append(info)
+    return flight_info
+# End of extract_flight_arrived function
+
+
+    
