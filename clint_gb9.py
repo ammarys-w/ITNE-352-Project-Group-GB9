@@ -24,3 +24,36 @@ def send_req(request):
             return json.loads(response)
     except ConnectionError:
         return None
+    
+# to handle Errors in the request from GUI
+def manage_request(): 
+# Check for name error 
+    if name_entry.get() == "" : 
+        rs_window("Please Provide a Valid Name !!") 
+        return 
+# Check for request type error 
+    request_type = request_type_combobox.get()
+    if request_type in ["Arrived", "Delayed"]:
+        parameters = {}
+    elif request_type == "Specific Airport": 
+        if airport_icao_entry.get() == "": 
+            rs_window("Please Provide the ICAO of the Airport !!") 
+            return 
+        parameters = airport_icao_entry.get().upper().replace(" ","")
+    elif request_type == "Specific Flight": 
+        if flight_iata_entry.get() == "": 
+            rs_window("Please Provide the IATA of the Flight !!") 
+            return 
+        parameters = flight_iata_entry.get().upper().replace(" ","") 
+    else: 
+            rs_window("Invalid Request Type \n Please Choose One From The Options !!") 
+            return 
+    request = {"type": request_type, "parameters": parameters} 
+    response = send_req(request) 
+# Check for response error 
+    if response == []: 
+        rs_window("No Results Found for Your Query !!") 
+    elif response is None: 
+        rs_window("Server is Unreachable :(")
+    else: rs_window(txt_look(json.dumps(response, indent=3)))
+
