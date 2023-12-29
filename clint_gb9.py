@@ -11,7 +11,7 @@ def send_req(request):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sc:
             sc.connect((server_ip, server_port))
-            name = name_entry.get()
+            name = nm_entry.get()
             sc.send(name.encode("ascii"))
             time.sleep(5)
             sc.send(json.dumps(request).encode("ascii"))
@@ -30,23 +30,23 @@ def send_req(request):
 # to handle Errors in the request from GUI
 def manage_request(): 
 # Check for name error 
-    if name_entry.get() == "" : 
+    if nm_entry.get() == "" : 
         rs_window("Please Provide a Valid Name !!") 
         return 
 # Check for request type error 
-    request_type = request_type_combobox.get()
+    request_type = req_type_combobox.get()
     if request_type in ["Arrived", "Delayed"]:
         parameters = {}
     elif request_type == "Specific Airport": 
-        if airport_icao_entry.get() == "": 
+        if ap_icao_entry.get() == "": 
             rs_window("Please Provide the ICAO of the Airport !!") 
             return 
-        parameters = airport_icao_entry.get().upper().replace(" ","")
+        parameters = ap_icao_entry.get().upper().replace(" ","")
     elif request_type == "Specific Flight": 
-        if flight_iata_entry.get() == "": 
+        if f_iata_entry.get() == "": 
             rs_window("Please Provide the IATA of the Flight !!") 
             return 
-        parameters = flight_iata_entry.get().upper().replace(" ","") 
+        parameters = f_iata_entry.get().upper().replace(" ","") 
     else: 
             rs_window("Invalid Request Type \n Please Choose One From The Options !!") 
             return 
