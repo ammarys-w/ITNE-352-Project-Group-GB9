@@ -55,4 +55,13 @@ def manage_request():
         rs_window("No Results Found for Your Query !!") 
     elif response is None: 
         rs_window("Server is Unreachable :(")
-    else: rs_window(txt_look(json.dumps(response, indent=3)))
+    else: rs_window(text_form(json.dumps(response, indent=3)))
+
+    # to modify the look of the text
+def text_form(text):
+    new_text= text.replace('''   },
+{''', "********************************************************************************")
+    remove = '"[{]},'
+    for sympol in remove:
+        new_text= new_text.replace(sympol, "")
+    return new_text
