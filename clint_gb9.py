@@ -24,7 +24,7 @@ def send_req(request):
             return json.loads(response)
     except ConnectionError:
         return None
-    
+
 # to handle Errors in the request from GUI
 def manage_request(): 
 # Check for name error 
@@ -56,4 +56,3 @@ def manage_request():
     elif response is None: 
         rs_window("Server is Unreachable :(")
     else: rs_window(txt_look(json.dumps(response, indent=3)))
-
