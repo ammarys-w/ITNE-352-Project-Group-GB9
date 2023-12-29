@@ -1,5 +1,7 @@
 import socket,json
 import time 
+import tkinter as tk
+from tkinter import ttk
 
 server_ip = "192.168.8.101"
 server_port = 50000
@@ -65,3 +67,14 @@ def text_form(text):
     for sympol in remove:
         new_text= new_text.replace(sympol, "")
     return new_text
+
+# to refresh the response window
+def res_window(response):
+    res_text.set(response)
+    res_display = tk.Text(mainframe, wrap="word")
+    res_display.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
+    res_scrollbar = ttk.Scrollbar(mainframe, command=res_display.yview)
+    res_scrollbar.grid(row=6, column=2, sticky=(tk.N, tk.S))
+    res_display.insert(tk.END, res_text.get())
+    res_display.config(state=tk.DISABLED)
+    res_display.config(yscrollcommand=res_scrollbar.set)    
