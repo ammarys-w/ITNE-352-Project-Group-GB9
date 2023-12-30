@@ -118,3 +118,33 @@ send_button.grid(row=4, column=1, sticky=tk.E)
 quit_button = ttk.Button(mainframe, text="Quit", command=root.destroy)
 quit_button.grid(row=4, column=2, sticky=tk.E)
 
+# create respone window
+res_label = ttk.Label(mainframe, text="Response:")
+res_label.grid(row=5, column=0, sticky=tk.W)
+res_text = tk.StringVar()
+res_window("""                                                                       
+__        __   _                            _               
+\ \      / /__| | ___ ___  _ __ ___   ___  (_)_ __          
+ \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \ | | '_ \         
+  \ V  V /  __/ | (_| (_) | | | | | |  __/ | | | | |        
+ __\_/\_/_\___|_|\___\___/|_| |_| |_|\___| |_|_| |_|        
+|  ___| (_) __ _| |__ | |_                                  
+| |_  | | |/ _` | '_ \| __|                                 
+|  _| | | | (_| | | | | |_                                  
+|_|   |_|_|\__, |_| |_|\__|                                 
+ ___       |___/                          _   _             
+|_ _|_ __  / _| ___  _ __ _ __ ___   __ _| |_(_) ___  _ __  
+ | || '_ \| |_ / _ \| '__| '_ ` _ \ / _` | __| |/ _ \| '_ \ 
+ | || | | |  _| (_) | |  | | | | | | (_| | |_| | (_) | | | |
+|___|_| |_|_|  \___/|_|  |_| |_| |_|\__,_|\__|_|\___/|_| |_|
+   / \   _ __  _ __                                         
+  / _ \ | '_ \| '_ \                                        
+ / ___ \| |_) | |_) |                                       
+/_/   \_\ .__/| .__/                                        
+        |_|   |_|                                            """)
+
+root.columnconfigure(0, weight=1)
+root.rowconfigure(0, weight=1)
+mainframe.columnconfigure(1, weight=1)
+mainframe.rowconfigure(6, weight=1)
+root.mainloop()
