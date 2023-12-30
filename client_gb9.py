@@ -143,6 +143,15 @@ __        __   _                            _
 /_/   \_\ .__/| .__/                                        
         |_|   |_|                                            """)
 
+light_theme = ttk.Style()
+light_theme.configure('TLabel', background='white', foreground='black') 
+light_theme.configure('TFrame', background='white')
+
+dark_theme = ttk.Style()
+dark_theme.configure('TLabel', background='black', foreground='white')
+dark_theme.configure('TFrame', background='grey20')
+
+
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 mainframe.columnconfigure(1, weight=1)
