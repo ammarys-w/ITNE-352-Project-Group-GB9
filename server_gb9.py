@@ -12,14 +12,9 @@ port = 50000
 
 
 def retrieve_data(arr_icao):
-    url = f"http://api.aviationstack.com/v1/flights?access_key={
-        api_key}&arr_icao={arr_icao}&limit=100"
+    url = f"http://api.aviationstack.com/v1/flights?access_key={api_key}&arr_icao={arr_icao}&limit=100"   
     server_response = requests.get(url)
     data_of_flight = server_response.json()
-
-    # Save the data to a JSON file
-    with open('GB9.json', 'w') as f:
-        json.dump(data_of_flight, f, indent=4)
 
     # checking if there is an error on the website
     if 'error' in data_of_flight:
@@ -27,10 +22,12 @@ def retrieve_data(arr_icao):
         sys.exit()
     # checking if there is no data available on the website
     if data_of_flight['data'] == []:
-        print(
-            '>>> There is No Data Matching This Airport Code from the [SERVER]')
+        print('>>> There is No Data Matching This Airport Code from the [SERVER]')
         return None
-
+    # Save the data to a JSON file
+    with open('GB9.json', 'w') as f:
+        json.dump(data_of_flight, f, indent=4)
+    return data_of_flight
 # End of retrieve_data function
 
 
@@ -41,7 +38,7 @@ def extract_flight_arrived(data):
         info = {
             'Departure Airport': flight['departure']['airport'],
             'Flight IATA': flight['flight']['iata'],
-            'Arrival Time': flight['arrival']['Scheduled'],
+            'Arrival Time': flight['arrival']['scheduled'],
             'Arival Terminal': flight['arrival']['terminal'],
             'Arival Gate': flight['arrival']['gate']
         }
@@ -58,7 +55,7 @@ def extract_flight_delayed(data):
         info = {
             'Departure Airport': flight['departure']['airport'],
             'Flight IATA': flight['flight']['iata'],
-            'Origin Departure Time': flight['departure']['Scheduled'],
+            'Origin Departure Time': flight['departure']['scheduled'],
             'Estimated Arrival Time': flight['arrival']['estimated'],
             'Arrival Delay': flight['arrival']['delay'],
             'Arival Terminal': flight['arrival']['terminal'],
@@ -120,46 +117,46 @@ def extract_specific_flight(data, iata):
 
 # Handling the client requests
 
+def process_client(client_sock, client_addr, client_id, flight_info):
+    print(f"[NEW CONNECTION] Client {client_id} connected from {client_addr}")
+    # Receive the client request
+    received_data = client_sock.recv(1024).decode("ascii")
+    client_request = json.loads(received_data)
+    print(f"[REQUEST] Client {client_id}: {client_request['type']}")
+    
+    # Process the client request
+    if client_request["type"] == "Arrived":
+        server_response = extract_flight_arrived(flight_info["data"])
+    elif client_request["type"] == "Delayed":
+        server_response = extract_flight_delayed(flight_info["data"])
+    elif client_request["type"] == "Specific Airport":
+        server_response = extract_specific_airport(flight_info["data"],client_request["parameters"])
+    elif client_request["type"] == "Specific Flight":
+        server_response = extract_specific_flight (flight_info["data"],client_request["parameters"])
+    else:
+        server_response = {"error": "Invalid request"}
 
-def handle_client(client_socket, addr, client_name, flight_data):
-    print(f"[NEW CONNECTION] {client_name} connected from {addr}")
-    # Receive the request
-    data = client_socket.recv(1024).decode("ascii")
-    request = json.loads(data)
-    print(f"[REQUEST] {client_name}: {request['type']}")
-    # Handle the request
-    handlers = {
-        "Arrived": lambda: extract_flight_arrived(flight_data["data"]),
-        "Delayed": lambda: extract_flight_delayed(flight_data["data"]),
-        "Specific Airport": lambda: extract_specific_airport(flight_data["data"], request["parameters"]),
-        "Specific Flight": lambda: extract_specific_flight(flight_data["data"], request["parameters"])
-    }
-    response = handlers.get(request["type"], lambda: {
-                            "error": "Invalid request"})()
-
-    # sending the response to the client
-    client_socket.send(json.dumps(response).encode("ascii"))
-    print("[DISCONNECTED] {}".format(client_name))
-    client_socket.close()
-
-
+    # Send the response to the client
+    client_sock.send(json.dumps(server_response).encode("ascii"))
+    print(f"[DISCONNECTED] Client {client_id}")
+    client_sock.close()
 # End of handle_client function
+
 # Managing airport erros
 while True:
-    airport_code = input("Please input the airport code: ")
-    flight_info = retrieve_data(airport_code)
+    arr_icao = input("Please input the airport code: ")
+    flight_info = retrieve_data(arr_icao)
     if flight_info is not None:
         break
 
 # Create a server socket
-server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_sock.bind((IP, port))
-server_sock.listen(3)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((IP, port))
+server_socket.listen(5)
 print("[SERVER] Listening on {} : {}".format(IP, port))
 
 while True:
-    client_sock, address = server_sock.accept()
+    client_sock, address = server_socket.accept()
     client_identity = client_sock.recv(1024).decode("utf-8")
-    client_thread = threading.Thread(target=handle_client, args=(
-        client_sock, address, client_identity, flight_info))
+    client_thread = threading.Thread(target=process_client, args=(client_sock, address, client_identity, flight_info))
     client_thread.start()
