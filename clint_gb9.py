@@ -78,3 +78,34 @@ def res_window(response):
     res_display.insert(tk.END, res_text.get())
     res_display.config(state=tk.DISABLED)
     res_display.config(yscrollcommand=res_scrollbar.set)    
+
+#create GUI interface
+root = tk.Tk()
+root.title("Flight Information App")
+mainframe = ttk.Frame(root, padding="10")
+mainframe.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+
+# create name box
+nm_label = ttk.Label(mainframe, text="Enter your name:")
+nm_label.grid(row=0, column=0, sticky=tk.W)
+nm_entry = ttk.Entry(mainframe)
+nm_entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
+
+# create request type box
+req_type_label = ttk.Label(mainframe, text="Select request type:")
+req_type_label.grid(row=1, column=0, sticky=tk.W)
+req_types = ["Arrived", "Delayed", "Specific Airport", "Specific Flight"]
+req_type_combobox = ttk.Combobox(mainframe, values=req_types)
+req_type_combobox.grid(row=1, column=1, sticky=(tk.W, tk.E))
+
+# create ICAO box
+ap_icao_label = ttk.Label(mainframe, text="ICAO code (Specific Airport only):")
+ap_icao_label.grid(row=2, column=0, sticky=tk.W)
+ap_icao_entry = ttk.Entry(mainframe)
+ap_icao_entry.grid(row=2, column=1, sticky=(tk.W, tk.E))
+
+# create IATA box
+f_iata_label = ttk.Label(mainframe, text="IATA code (Specific Flight only):")
+f_iata_label.grid(row=3, column=0, sticky=tk.W)
+f_iata_entry = ttk.Entry(mainframe)
+f_iata_entry.grid(row=3, column=1, sticky=(tk.W, tk.E))
