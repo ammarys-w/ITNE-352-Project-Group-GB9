@@ -109,3 +109,12 @@ f_iata_label = ttk.Label(mainframe, text="IATA code (Specific Flight only):")
 f_iata_label.grid(row=3, column=0, sticky=tk.W)
 f_iata_entry = ttk.Entry(mainframe)
 f_iata_entry.grid(row=3, column=1, sticky=(tk.W, tk.E))
+
+# create send button
+send_button = ttk.Button(mainframe, text="send", command=manage_request)
+send_button.grid(row=4, column=1, sticky=tk.E)
+
+# create quit button
+quit_button = ttk.Button(mainframe, text="Quit", command=root.destroy)
+quit_button.grid(row=4, column=2, sticky=tk.E)
+
