@@ -62,4 +62,35 @@ def extract_flight_delayed(data):
 
 
 
+
+
+
+
+
+
+
+#option number 4: Extract specific flight from the data
+def extract_specific_airport(data,iata):
+    spcific_flight=[]
+    for flight in data:
+        if flight['flight']['iata'] == iata:
+            info = {
+                'Flight IATA': flight['flight']['iata'],
+                'Flight Status': flight['flight_status'],
+                'Departure Airport': flight['departure']['airport'],
+                'Departure Terminal': flight['departure']['terminal'],
+                'Departure Gate': flight['departure']['gate'] ,
+                'Arrival Airport': flight['arrival']['airport'],
+                'Arival Terminal': flight['arrival']['terminal'],
+                'Arival Gate': flight['arrival']['gate'] ,
+                'Scheduled departure time': flight['departure']['scheduled'],
+                'Scheduled arrival time': flight['arrival']['scheduled']
+            }
+            if flight["flight"].get("iata") == iata:
+                spcific_flight.append(info)
+            return spcific_flight
+# End of extract_specific_airport function
+        
+      
+
     
