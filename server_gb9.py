@@ -60,17 +60,27 @@ def extract_flight_delayed(data):
     return delayed_flights
 # End of extract_flight_delayed function
 
-
-
-
-
-
-
-
-
+#option number 3: Extract specific airport from the data
+def extract_specific_airport(data,icao):
+    spcific_airport=[]
+    for flight in data:
+        info ={
+            "Flight IATA": flight["flight"]["iata"],
+            "Flight Status": flight["flight_status"],
+            "Departure Airport": flight["departure"]["airport"],
+            "Departure Gate": flight["departure"]["gate"],
+            "Original Departure Time": flight["departure"]["scheduled"],
+            "Estimated Arrival Time": flight["arrival"]["estimated"],
+            "Arrival Gate": flight["arrival"]["gate"]  
+        }
+        #If a flight's ICAO code matches the provided one, the flight's information is added to the specific_airport list.
+        if flight["flight"].get("icao") == icao:
+                spcific_airport.append(info)
+    return spcific_airport
+# End of extract_specific_airport function
 
 #option number 4: Extract specific flight from the data
-def extract_specific_airport(data,iata):
+def extract_specific_flight(data,iata):
     spcific_flight=[]
     for flight in data:
         if flight['flight']['iata'] == iata:
@@ -86,6 +96,8 @@ def extract_specific_airport(data,iata):
                 'Scheduled departure time': flight['departure']['scheduled'],
                 'Scheduled arrival time': flight['arrival']['scheduled']
             }
+            # if the IATA code matches the provided one, the flight's information is added to the specific_flight list.
+            # So , this function is gathering information about flights that match a specific IATA code.
             if flight["flight"].get("iata") == iata:
                 spcific_flight.append(info)
             return spcific_flight
