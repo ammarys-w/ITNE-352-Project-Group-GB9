@@ -102,7 +102,29 @@ def extract_specific_flight(data,iata):
                 spcific_flight.append(info)
             return spcific_flight
 # End of extract_specific_airport function
-        
+
+# Handling the client requests
+def handle_client(client_socket, addr, client_name, flight_data):
+    print(f"[NEW CONNECTION] {client_name} connected from {addr}")
+    # Receive the request
+    data = client_socket.recv(1024).decode("ascii")
+    request = json.loads(data)
+    print(f"[REQUEST] {client_name}: {request['type']}")
+    # Handle the request
+    handlers = {
+        "Arrived": lambda: extract_flight_arrived(flight_data["data"]),
+        "Delayed": lambda: extract_flight_delayed(flight_data["data"]),
+        "Specific Airport": lambda: extract_specific_airport(flight_data["data"], request["parameters"]),
+        "Specific Flight": lambda: extract_specific_flight(flight_data["data"], request["parameters"])
+    }
+    response = handlers.get(request["type"], lambda: {"error": "Invalid request"})()
+
+
+    #sending the response to the client    
+    client_socket.send(json.dumps(response).encode("ascii"))
+    print("[DISCONNECTED] {}".format(client_name))
+    client_socket.close()    
+# End of handle_client function        
       
 
     
