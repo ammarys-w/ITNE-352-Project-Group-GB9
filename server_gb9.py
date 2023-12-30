@@ -1,5 +1,6 @@
 import socket,json
 import sys
+import threading
 
 api_key = "8d782c20ade5ab1413c59a3f9b545516"
 IP="192.168.8.101"
@@ -125,13 +126,23 @@ def handle_client(client_socket, addr, client_name, flight_data):
     client_socket.close()   
      
 # End of handle_client function        
-# Manage airport errors
+# Managing airport erros
 while True:
     airport_code = input("Please input the airport code: ")
     flight_info = retrieve_data(airport_code)
     if flight_info is not None:
         break  
     
-        
+# Create a server socket
+server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_sock.bind((IP, port))
+server_sock.listen(3)
+print(f"[SERVER] Server is listening on {IP} : { port}")    
+
+while True:
+    client_sock, address = server_sock.accept()
+    client_identity = client_sock.recv(1024).decode("utf-8")
+    client_thread = threading.Thread(target=handle_client, args=(client_sock, address, client_identity, flight_info))
+    client_thread.start()        
 
     
