@@ -119,12 +119,19 @@ def handle_client(client_socket, addr, client_name, flight_data):
     }
     response = handlers.get(request["type"], lambda: {"error": "Invalid request"})()
 
-
     #sending the response to the client    
     client_socket.send(json.dumps(response).encode("ascii"))
     print("[DISCONNECTED] {}".format(client_name))
-    client_socket.close()    
+    client_socket.close()   
+     
 # End of handle_client function        
-      
+# Manage airport errors
+while True:
+    airport_code = input("Please input the airport code: ")
+    flight_info = retrieve_data(airport_code)
+    if flight_info is not None:
+        break  
+    
+        
 
     
