@@ -4,8 +4,8 @@ import threading
 import requests
 
 api_key = "8d782c20ade5ab1413c59a3f9b545516"
-IP="192.168.8.101"
-port=50000
+IP= "192.168.8.101"
+port= 50000
 
 # Getting data from the WEbsite
 def retrieve_data(arr_icao):
