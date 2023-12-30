@@ -15,7 +15,7 @@ def retrieve_data(arr_icao):
     
     # Save the data to a JSON file
     with open('GB9.json', 'w') as f:
-        json.dump(data_of_flight, f,index=4)
+        json.dump(data_of_flight, f, indent=4)
     
     #checking if there is an error on the website 
     if 'error' in data_of_flight :
