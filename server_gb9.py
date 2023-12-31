@@ -48,7 +48,6 @@ def extract_flight_arrived(data):
 
 # option number 2:Extract flight Delayed from the data
 
-
 def extract_flight_delayed(data):
     delayed_flights = []
     for flight in data:
@@ -70,7 +69,6 @@ def extract_flight_delayed(data):
 
 # option number 3: Extract specific airport from the data
 
-
 def extract_specific_airport(data, icao):
     spcific_airport = []
     for flight in data:
@@ -85,12 +83,11 @@ def extract_specific_airport(data, icao):
         }
         # If a flight's ICAO code matches the provided one, the flight's information is added to the specific_airport list.
         if flight["flight"].get("icao") == icao:
-            spcific_airport.append(info)
+            extract_specific_airport.append(info)
     return spcific_airport
 # End of extract_specific_airport function
 
 # option number 4: Extract specific flight from the data
-
 
 def extract_specific_flight(data, iata):
     spcific_flight = []
@@ -117,46 +114,48 @@ def extract_specific_flight(data, iata):
 
 # Handling the client requests
 
-def process_client(client_sock, client_addr, client_id, flight_info):
-    print(f"[NEW CONNECTION] Client {client_id} connected from {client_addr}")
-    # Receive the client request
-    received_data = client_sock.recv(1024).decode("ascii")
-    client_request = json.loads(received_data)
-    print(f"[REQUEST] Client {client_id}: {client_request['type']}")
+def handling_client(sock, addr, client_identifier, flight_data):
+    print(f"[NEW CONNECTION] {client_identifier} connected from {addr}")
+    # Receive the request
+    data_received = sock.recv(1024).decode("ascii")
+    client_req = json.loads(data_received)
+    print(f"[REQUEST] {client_identifier}: {client_req['type']}")
     
-    # Process the client request
-    if client_request["type"] == "Arrived":
-        server_response = extract_flight_arrived(flight_info["data"])
-    elif client_request["type"] == "Delayed":
-        server_response = extract_flight_delayed(flight_info["data"])
-    elif client_request["type"] == "Specific Airport":
-        server_response = extract_specific_airport(flight_info["data"],client_request["parameters"])
-    elif client_request["type"] == "Specific Flight":
-        server_response = extract_specific_flight (flight_info["data"],client_request["parameters"])
+    # Process the request
+    if client_req["type"] == "Arrived":
+        response = extract_flight_arrived(flight_data["data"])
+    elif client_req["type"] == "Delayed":
+        response = extract_flight_delayed(flight_data["data"])
+    elif client_req["type"] == "Specific Airport":
+        response = extract_specific_airport(flight_data["data"], client_req["parameters"] )
+    elif client_req["type"] == "Specific Flight":
+        response = extract_specific_airport(flight_data["data"], client_req["parameters"] )
     else:
-        server_response = {"error": "Invalid request"}
+        response = {"error": "Invalid request"}
 
     # Send the response to the client
-    client_sock.send(json.dumps(server_response).encode("ascii"))
-    print(f"[DISCONNECTED] Client {client_id}")
-    client_sock.close()
+    sock.send(json.dumps(response).encode("ascii"))
+    print(f"[DISCONNECTED] {client_identifier}")
+    sock.close()
 # End of handle_client function
 
 # Managing airport erros
 while True:
-    arr_icao = input("Please input the airport code: ")
+    arr_icao = input(">> Please input the airport code: ")
     flight_info = retrieve_data(arr_icao)
     if flight_info is not None:
         break
 
-# Create a server socket
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((IP, port))
-server_socket.listen(5)
-print("[SERVER] Listening on {} : {}".format(IP, port))
+# Create a new socket using the Internet address family and Stream socket type
+
+server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_sock.bind((IP, port))
+# Set the socket to listen for incoming connections with a backlog of 4 connections at most' You can change it to 3 if u want'
+server_sock.listen(4)
+print(f"[SERVER] Listening on {IP} : {port}")
 
 while True:
-    client_sock, address = server_socket.accept()
+    client_sock, address = server_sock.accept()
     client_identity = client_sock.recv(1024).decode("utf-8")
-    client_thread = threading.Thread(target=process_client, args=(client_sock, address, client_identity, flight_info))
+    client_thread = threading.Thread(target=handling_client, args = (client_sock, address, client_identity, flight_info))
     client_thread.start()
