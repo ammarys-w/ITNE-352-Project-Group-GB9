@@ -33,7 +33,6 @@ def retrieve_data(arr_icao):
 def extract_flight_arrived(data):
     flight_info = []
     for flight in data:
-        
             info = {
                 'Departure Airport': flight['departure']['airport'],
                 'Flight IATA': flight['flight']['iata'],
@@ -91,7 +90,6 @@ def extract_specific_airport(data, icao):
 def extract_specific_flight(data, iata):
     spcific_flight = []
     for flight in data:
-        if flight['flight']['iata'] == iata:
             info = {
                 'Flight IATA': flight['flight']['iata'],
                 'Flight Status': flight['flight_status'],
@@ -145,7 +143,7 @@ while True:
     if flight_info is not None:
         break
 
-# Create a new socket using the Internet address family and Stream socket type
+# Create a new socket using the Internet address and Stream socket type
 
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock.bind((IP, port))
@@ -153,8 +151,12 @@ server_sock.bind((IP, port))
 server_sock.listen(4)
 print(f"[SERVER STATUS] Server is now listening on {IP} : {port}")
 
-while True:
-    client_sock, address = server_sock.accept()
-    client_identity = client_sock.recv(1024).decode("ascii")
-    client_thread = threading.Thread(target=handling_client, args = (client_sock, address, client_identity, flight_info))
-    client_thread.start()
+try:
+    while True:
+        client_sock, address = server_sock.accept()
+        client_identity = client_sock.recv(1024).decode("ascii")
+        client_thread = threading.Thread(target=handling_client, args = (client_sock, address, client_identity, flight_info))
+        client_thread.start()
+except KeyboardInterrupt:
+    print("\n[SERVER SHUTDOWN] Server is shutting down...")
+    server_sock.close()

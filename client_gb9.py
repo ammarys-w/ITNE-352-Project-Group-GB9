@@ -26,14 +26,18 @@ def send_req(request):
             return json.loads(response)
     except ConnectionError:
         return None
-
+    except KeyboardInterrupt:
+        print("\n[CLIENT DISCONNECT] Client is disconnecting...")
+        sc.close()
+# end of send_req function
+        
 # to handle Errors in the request from GUI
 def manage_request(): 
-# Check for name error 
+    # Check for name error 
     if nm_entry.get() == "" : 
         res_window("Please Provide a Valid Name !!") 
         return 
-# Check for request type error 
+    # Check for request type error 
     request_type = req_type_combobox.get()
     if request_type in ["Arrived", "Delayed"]:
         parameters = {}
@@ -52,7 +56,7 @@ def manage_request():
             return 
     request = {"type": request_type, "parameters": parameters} 
     response = send_req(request) 
-# Check for response error 
+    # Check for response error 
     if response == []: 
         res_window("No Results Found for Your Query !!") 
     elif response is None: 
@@ -79,6 +83,10 @@ def res_window(response):
     res_display.config(state=tk.DISABLED)
     res_display.config(yscrollcommand=res_scrollbar.set)    
 
+def on_close():
+    print("\n[CLIENT DISCONNECT] Client is disconnecting...")
+    root.destroy()
+    
 #create GUI interface
 root = tk.Tk()
 root.title("Flight Information App")
@@ -151,8 +159,12 @@ dark_theme = ttk.Style()
 dark_theme.configure('TLabel', background='black', foreground='white')
 dark_theme.configure('TFrame', background='grey20')
 
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-mainframe.columnconfigure(1, weight=1)
-mainframe.rowconfigure(6, weight=1)
-root.mainloop()
+try:
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+    mainframe.columnconfigure(1, weight=1)
+    mainframe.rowconfigure(6, weight=1)
+    root.mainloop()
+except KeyboardInterrupt:
+    print("\n [CLIENT DISCONNECT] Client is disconnecting... You press Ctrl+C !!")
+    root.destroy()    
