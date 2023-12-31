@@ -157,6 +157,8 @@ try:
         client_identity = client_sock.recv(1024).decode("ascii")
         client_thread = threading.Thread(target=handling_client, args = (client_sock, address, client_identity, flight_info))
         client_thread.start()
-except KeyboardInterrupt:
+        
+except KeyboardInterrupt: 
+    # to handle the keyboard interrupt
     print("\n[SERVER SHUTDOWN] Server is shutting down...")
     server_sock.close()

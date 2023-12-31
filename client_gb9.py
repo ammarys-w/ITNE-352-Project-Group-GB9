@@ -165,6 +165,6 @@ try:
     mainframe.columnconfigure(1, weight=1)
     mainframe.rowconfigure(6, weight=1)
     root.mainloop()
-except KeyboardInterrupt:
+except KeyboardInterrupt: # to handle Ctrl+C from the user 
     print("\n [CLIENT DISCONNECT] Client is disconnecting... You press Ctrl+C !!")
     root.destroy()    
