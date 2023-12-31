@@ -10,12 +10,13 @@ port = 50000
 
 # Getting data from the WEbsite
 
-
 def retrieve_data(arr_icao):
     url = f"http://api.aviationstack.com/v1/flights?access_key={api_key}&arr_icao={arr_icao}&limit=100"   
     server_response = requests.get(url)
     data_of_flight = server_response.json()
-
+    # Save the data to a JSON file
+    with open('GB9.json', 'w') as f:
+        json.dump(data_of_flight, f, indent=4)
     # checking if there is an error on the website
     if 'error' in data_of_flight:
         print('>>> Error: '+data_of_flight['error']['message'])
@@ -24,25 +25,23 @@ def retrieve_data(arr_icao):
     if data_of_flight['data'] == []:
         print('>>> There is No Data Matching This Airport Code from the [SERVER]')
         return None
-    # Save the data to a JSON file
-    with open('GB9.json', 'w') as f:
-        json.dump(data_of_flight, f, indent=4)
+    
     return data_of_flight
 # End of retrieve_data function
-
 
 # option number 1:Extract flight arrived from the data
 def extract_flight_arrived(data):
     flight_info = []
     for flight in data:
-        info = {
-            'Departure Airport': flight['departure']['airport'],
-            'Flight IATA': flight['flight']['iata'],
-            'Arrival Time': flight['arrival']['scheduled'],
-            'Arival Terminal': flight['arrival']['terminal'],
-            'Arival Gate': flight['arrival']['gate']
-        }
-        flight_info.append(info)
+        
+            info = {
+                'Departure Airport': flight['departure']['airport'],
+                'Flight IATA': flight['flight']['iata'],
+                'Arrival Time': flight['arrival']['scheduled'],
+                'Arival Terminal': flight['arrival']['terminal'],
+                'Arival Gate': flight['arrival']['gate']
+            }
+            flight_info.append(info)
     return flight_info
 # End of extract_flight_arrived function
 
@@ -115,11 +114,11 @@ def extract_specific_flight(data, iata):
 # Handling the client requests
 
 def handling_client(sock, addr, client_identifier, flight_data):
-    print(f"[NEW CONNECTION] {client_identifier} connected from {addr}")
+    print(f"[NEW CLIENT] {client_identifier} has established a connection from {addr}")
     # Receive the request
     data_received = sock.recv(1024).decode("ascii")
     client_req = json.loads(data_received)
-    print(f"[REQUEST] {client_identifier}: {client_req['type']}")
+    print(f"[CLIENT REQUEST] Client {client_identifier} requested: {client_req['type']}")
     
     # Process the request
     if client_req["type"] == "Arrived":
@@ -135,7 +134,7 @@ def handling_client(sock, addr, client_identifier, flight_data):
 
     # Send the response to the client
     sock.send(json.dumps(response).encode("ascii"))
-    print(f"[DISCONNECTED] {client_identifier}")
+    print(f"[CLIENT DISCONNECTED] {client_identifier}")
     sock.close()
 # End of handle_client function
 
@@ -152,10 +151,10 @@ server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock.bind((IP, port))
 # Set the socket to listen for incoming connections with a backlog of 4 connections at most' You can change it to 3 if u want'
 server_sock.listen(4)
-print(f"[SERVER] Listening on {IP} : {port}")
+print(f"[SERVER STATUS] Server is now listening on {IP} : {port}")
 
 while True:
     client_sock, address = server_sock.accept()
-    client_identity = client_sock.recv(1024).decode("utf-8")
+    client_identity = client_sock.recv(1024).decode("ascii")
     client_thread = threading.Thread(target=handling_client, args = (client_sock, address, client_identity, flight_info))
     client_thread.start()
